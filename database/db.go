@@ -69,3 +69,54 @@ func Getdata() ([]models.Results, error) {
 	return results, nil
 
 }
+
+func SiginingUp(user models.Identity) (bool, error) {
+	isuser := false
+	query := "SELECT 'exists' AS result FROM userid WHERE username = ? UNION SELECT 'notexists' AS resut LIMIT 1"
+	rows, err := db.Query(query, user)
+	if err != nil {
+		return false, nil
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var result string
+		err := rows.Scan(&result)
+		if err != nil {
+			return false, nil
+		}
+		if result == "exists" {
+			isuser = true
+		}
+	}
+	err = rows.Err()
+	if err != nil {
+		return false, nil
+	}
+	return isuser, nil
+}
+
+func LoggingIn(iden models.Identify) (bool, error) {
+	query := "SELECT 'exists' AS result FROM userid WHERE username = $1 AND password = $2 UNION SELECT 'not exists' AS result LIMIT 1"
+	rows, err := db.Query(query, iden.User, iden.Password)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	found := false
+	for rows.Next() {
+		var result string
+		err := rows.Scan(&result)
+		if err != nil {
+			return false, err
+		}
+		if result == "exists" {
+			found = true
+		}
+	}
+	err = rows.Err()
+	if err != nil {
+		return false, err
+	}
+	return found, nil
+
+}

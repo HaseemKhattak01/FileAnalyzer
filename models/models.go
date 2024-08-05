@@ -23,3 +23,13 @@ type UpdateField struct {
 	Value int    `json:"value"`
 	Id    int    `json:"id" db:"id"`
 }
+
+type Identity struct {
+	User     string `json: user`
+	Email    string `json: email`
+	Password string `json: password`
+}
+type Identify struct {
+	User     string `json: user`
+	Password string `json: password`
+}

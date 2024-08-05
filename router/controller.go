@@ -4,8 +4,8 @@ import (
 	"FileReader/database"
 	"FileReader/models"
 	"fmt"
+	"io"
 	"net/http"
-	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -21,6 +21,12 @@ type Results struct {
 	Words          int
 }
 
+type Identity struct {
+	User     string
+	Email    string
+	Password string
+}
+
 func FileReader(g *gin.Context) {
 	defer timer("main")()
 	numstring := g.Query("num")
@@ -33,12 +39,16 @@ func FileReader(g *gin.Context) {
 	if err != nil {
 		g.JSON(http.StatusBadRequest, err)
 	}
-	filepath := "./test.txt"
-	content, err := os.ReadFile(filepath)
+	file, _, err := g.Request.FormFile("file")
 	if err != nil {
 		g.JSON(http.StatusBadRequest, err)
 	}
-	size := len(content)
+	content, err := io.ReadAll(file)
+	if err != nil {
+		g.JSON(http.StatusBadRequest, err)
+	}
+	text := string(content)
+	size := len(text)
 	chunkSize := size / num
 	channel := make(chan Results)
 	var wg sync.WaitGroup
@@ -76,6 +86,7 @@ func FileReader(g *gin.Context) {
 	}
 	g.JSON(http.StatusOK, finalResults)
 }
+
 func Count(str string, channel chan Results) {
 	VowelCount := 0
 	WordsCount := 0
@@ -146,7 +157,40 @@ func Updatedata(g *gin.Context) {
 	}
 	database.Update(up)
 
-	//database.Update(query, up.Value, up.Id)
-
 	g.JSON(http.StatusOK, gin.H{"message": "Record updated successfully"})
+}
+
+func Signup(g *gin.Context) {
+	var input models.Identity
+	if err := g.BindJSON(&input); err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+	exists, err := database.SiginingUp(input)
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "Failed to check user existence"})
+		return
+	}
+	if exists {
+		g.JSON(http.StatusConflict, gin.H{"error": "User already exists"})
+		return
+	}
+	g.JSON(http.StatusOK, gin.H{"message": "User signed up successfully"})
+}
+
+func Login(g *gin.Context) {
+	var input models.Identify
+	if err := g.ShouldBindJSON(&input); err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+	isvalid, err := database.LoggingIn(input)
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "Failed to authenticate user"})
+	}
+	if !isvalid {
+		g.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+		return
+	}
+	g.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 }
