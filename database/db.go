@@ -70,7 +70,7 @@ func Getdata() ([]models.Results, error) {
 
 }
 
-func SiginingUp(user models.Identity) (bool, error) {
+func SignUp_db(user models.Identity) (bool, error) {
 	isuser := false
 	query := "SELECT 'exists' AS result FROM userid WHERE username = ? UNION SELECT 'notexists' AS resut LIMIT 1"
 	rows, err := db.Query(query, user)
@@ -95,7 +95,7 @@ func SiginingUp(user models.Identity) (bool, error) {
 	return isuser, nil
 }
 
-func LoggingIn(iden models.Identify) (bool, error) {
+func LogIn_db(iden models.Identify) (bool, error) {
 	query := "SELECT 'exists' AS result FROM userid WHERE username = $1 AND password = $2 UNION SELECT 'not exists' AS result LIMIT 1"
 	rows, err := db.Query(query, iden.User, iden.Password)
 	if err != nil {

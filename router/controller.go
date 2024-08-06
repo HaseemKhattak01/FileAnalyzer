@@ -166,7 +166,7 @@ func Signup(g *gin.Context) {
 		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-	exists, err := database.SiginingUp(input)
+	exists, err := database.SignUp_db(input)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"error": "Failed to check user existence"})
 		return
@@ -184,7 +184,7 @@ func Login(g *gin.Context) {
 		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-	isvalid, err := database.LoggingIn(input)
+	isvalid, err := database.LogIn_db(input)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"error": "Failed to authenticate user"})
 	}

@@ -11,7 +11,7 @@ import (
 var db *sql.DB
 
 func ConnectDatabase() (*sql.DB, error) {
-	host := "localhost"
+	host := "db"
 	port := 5432
 	user := "postgres"
 	dbname := "postgres"
