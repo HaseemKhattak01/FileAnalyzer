@@ -5,11 +5,11 @@ import (
 	"fmt"
 )
 
-func CreateUser(vowels, spaces, capitalletters, smallleters, Words int) error {
+func InsertData(Vowels, Spaces, Capitalletters, Smallletters, Words int) error {
 	fmt.Println("In create user function")
-	fmt.Println(vowels, spaces, capitalletters, smallleters, Words)
+	// fmt.Println(Vowels, Spaces, Capitalletters, Smallletters, Words)
 
-	_, err := db.Exec("INSERT INTO filerecords (vowels, spaces, capitalletters, smallleters, words) VALUES($1, $2, $3, $4, $5)", vowels, spaces, capitalletters, smallleters, Words)
+	_, err := db.Exec("INSERT INTO filerecords (vowels, spaces, capitalletters, smallletters, words) VALUES($1, $2, $3, $4, $5)", Vowels, Spaces, Capitalletters, Smallletters, Words)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -19,15 +19,15 @@ func CreateUser(vowels, spaces, capitalletters, smallleters, Words int) error {
 func Update(up models.UpdateField) {
 	var query string
 	if up.Field == "vowels" {
-		query = fmt.Sprintf("UPDATE public.filerecords SET vowels=$1 WHERE id=$2")
+		query = "UPDATE public.filerecords SET vowels=$1 WHERE id=$2"
 	} else if up.Field == "capitalletters" {
-		query = fmt.Sprintf("UPDATE public.filerecords SET capitalletters=$1 WHERE id=$2")
+		query = "UPDATE public.filerecords SET capitalletters=$1 WHERE id=$2"
 	} else if up.Field == "smallleters" {
-		query = fmt.Sprintf("UPDATE public.filerecords SET smallleters=$1 WHERE id=$2")
+		query = "UPDATE public.filerecords SET smallletters=$1 WHERE id=$2"
 	} else if up.Field == "words" {
-		query = fmt.Sprintf("UPDATE public.filerecords SET words=$1 WHERE id=$2")
+		query = "UPDATE public.filerecords SET words=$1 WHERE id=$2"
 	} else if up.Field == "spaces" {
-		query = fmt.Sprintf("UPDATE public.filerecords SET spaces=$1 WHERE id=$2")
+		query = "UPDATE public.filerecords SET spaces=$1 WHERE id=$2"
 	}
 
 	row := db.QueryRow(query, up.Value, up.Id)
@@ -71,33 +71,16 @@ func Getdata() ([]models.Results, error) {
 }
 
 func SignUp_db(user models.Identity) (bool, error) {
-	isuser := false
-	query := "SELECT 'exists' AS result FROM userid WHERE username = ? UNION SELECT 'notexists' AS resut LIMIT 1"
-	rows, err := db.Query(query, user)
+	_, err := db.Exec("INSERT INTO userid (username , email , password) VALUES($1, $2, $3)", user.Username, user.Email, user.Password)
 	if err != nil {
-		return false, nil
+		return false, err
 	}
-	defer rows.Close()
-	for rows.Next() {
-		var result string
-		err := rows.Scan(&result)
-		if err != nil {
-			return false, nil
-		}
-		if result == "exists" {
-			isuser = true
-		}
-	}
-	err = rows.Err()
-	if err != nil {
-		return false, nil
-	}
-	return isuser, nil
+	return true, nil
 }
 
 func LogIn_db(iden models.Identify) (bool, error) {
 	query := "SELECT 'exists' AS result FROM userid WHERE username = $1 AND password = $2 UNION SELECT 'not exists' AS result LIMIT 1"
-	rows, err := db.Query(query, iden.User, iden.Password)
+	rows, err := db.Query(query, iden.Username, iden.Password)
 	if err != nil {
 		return false, err
 	}

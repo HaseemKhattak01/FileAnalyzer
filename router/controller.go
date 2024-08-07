@@ -22,7 +22,7 @@ type Results struct {
 }
 
 type Identity struct {
-	User     string
+	Username string
 	Email    string
 	Password string
 }
@@ -80,7 +80,7 @@ func FileReader(g *gin.Context) {
 		finalResults.Smallletters += res.Smallletters
 		finalResults.Words += res.Words
 	}
-	err = database.CreateUser(finalResults.Vowels, finalResults.Spaces, finalResults.Capitalletters, finalResults.Smallletters, finalResults.Words)
+	err = database.InsertData(finalResults.Vowels, finalResults.Spaces, finalResults.Capitalletters, finalResults.Smallletters, finalResults.Words)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, err)
 	}
@@ -162,6 +162,7 @@ func Updatedata(g *gin.Context) {
 
 func Signup(g *gin.Context) {
 	var input models.Identity
+	fmt.Println(input)
 	if err := g.BindJSON(&input); err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return

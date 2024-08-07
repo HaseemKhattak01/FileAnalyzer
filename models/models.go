@@ -5,7 +5,7 @@ type Results struct {
 	Vowels         int `json:"vowels"`
 	Spaces         int `json:"spaces"`
 	Capitalletters int `json:"capitalletters"`
-	Smallletters   int `json:"smallleters"`
+	Smallletters   int `json:"smallletters"`
 	Words          int `json:"words"`
 }
 
@@ -14,7 +14,7 @@ type DBResults struct {
 	Vowels         int `db:"vowels"`
 	Spaces         int `db:"spaces"`
 	Capitalletters int `db:"capitalletters"`
-	Smallletters   int `db:"smallleters"`
+	Smallletters   int `db:"smallletters"`
 	Words          int `db:"words"`
 }
 
@@ -25,11 +25,11 @@ type UpdateField struct {
 }
 
 type Identity struct {
-	User     string `json: user`
-	Email    string `json: email`
-	Password string `json: password`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 type Identify struct {
-	User     string `json: user`
+	Username string `json: username`
 	Password string `json: password`
 }
