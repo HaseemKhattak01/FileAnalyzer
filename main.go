@@ -11,5 +11,5 @@ func main() {
 	g := gin.Default()
 	database.ConnectDatabase()
 	router.Routes(g)
-	g.Run(":3000")
+	g.Run(":8080")
 }

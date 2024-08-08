@@ -5,10 +5,10 @@ import (
 )
 
 func Routes(r *gin.Engine) {
-	r.POST("/home1", Signup)
-	r.POST("/home2", Login)
-	r.POST("/home", FileReader)
-	r.GET("/home", Getall)
-	r.PUT("/home", Updatedata)
-	r.DELETE("/home/:id", Deletedata)
+	r.POST("/signup", SignUp)
+	r.POST("/login", LogIn)
+	r.POST("/file", FileReader)
+	r.GET("/file", GetAll)
+	r.PUT("/file", UpdateData)
+	r.DELETE("/file/:id", DeleteData)
 }

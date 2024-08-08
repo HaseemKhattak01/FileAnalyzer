@@ -125,7 +125,7 @@ func timer(name string) func() {
 	}
 }
 
-func Getall(g *gin.Context) {
+func GetAll(g *gin.Context) {
 	data, err := database.Getdata()
 	if err != nil {
 		g.JSON(http.StatusBadRequest, err.Error())
@@ -134,7 +134,7 @@ func Getall(g *gin.Context) {
 	g.JSON(http.StatusOK, data)
 }
 
-func Deletedata(g *gin.Context) {
+func DeleteData(g *gin.Context) {
 	idString := g.Param("id")
 	fmt.Println(idString)
 	id, err := strconv.Atoi(idString)
@@ -149,7 +149,7 @@ func Deletedata(g *gin.Context) {
 	g.JSON(http.StatusOK, del)
 }
 
-func Updatedata(g *gin.Context) {
+func UpdateData(g *gin.Context) {
 	up := models.UpdateField{}
 	if err := g.ShouldBindJSON(&up); err != nil {
 		g.JSON(http.StatusInternalServerError, gin.H{"error": err})
@@ -160,7 +160,7 @@ func Updatedata(g *gin.Context) {
 	g.JSON(http.StatusOK, gin.H{"message": "Record updated successfully"})
 }
 
-func Signup(g *gin.Context) {
+func SignUp(g *gin.Context) {
 	var input models.Identity
 	fmt.Println(input)
 	if err := g.BindJSON(&input); err != nil {
@@ -173,13 +173,12 @@ func Signup(g *gin.Context) {
 		return
 	}
 	if exists {
-		g.JSON(http.StatusConflict, gin.H{"error": "User already exists"})
+		g.JSON(http.StatusConflict, gin.H{"message": "User signed up successfully"})
 		return
 	}
-	g.JSON(http.StatusOK, gin.H{"message": "User signed up successfully"})
 }
 
-func Login(g *gin.Context) {
+func LogIn(g *gin.Context) {
 	var input models.Identify
 	if err := g.ShouldBindJSON(&input); err != nil {
 		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
