@@ -1,6 +1,7 @@
 package router
 
 import (
+	"FileReader/Jwt"
 	"FileReader/database"
 	"FileReader/models"
 	"fmt"
@@ -25,6 +26,12 @@ type Identity struct {
 	Username string
 	Email    string
 	Password string
+}
+
+type Response struct {
+	Data    interface{}
+	Message string
+	Status  int
 }
 
 func FileReader(g *gin.Context) {
@@ -192,5 +199,15 @@ func LogIn(g *gin.Context) {
 		g.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
 		return
 	}
-	g.JSON(http.StatusOK, gin.H{"message": "Login successful"})
+	token, err := Jwt.CreateToken(input.Username)
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	response := models.Response{
+		Data:    token,
+		Message: "Authentication successful",
+		Status:  http.StatusOK,
+	}
+	g.JSON(http.StatusCreated, response)
 }

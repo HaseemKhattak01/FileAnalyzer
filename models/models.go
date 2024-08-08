@@ -33,3 +33,9 @@ type Identify struct {
 	Username string `json: username`
 	Password string `json: password`
 }
+
+type Response struct {
+	Data    interface{} `json:"data"`
+	Message string      `json:"message"`
+	Status  int         `json:"status"`
+}
