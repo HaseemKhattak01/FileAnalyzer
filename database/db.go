@@ -7,8 +7,6 @@ import (
 
 func InsertData(Vowels, Spaces, Capitalletters, Smallletters, Words int) error {
 	fmt.Println("In create user function")
-	// fmt.Println(Vowels, Spaces, Capitalletters, Smallletters, Words)
-
 	_, err := db.Exec("INSERT INTO filerecords (vowels, spaces, capitalletters, smallletters, words) VALUES($1, $2, $3, $4, $5)", Vowels, Spaces, Capitalletters, Smallletters, Words)
 	if err != nil {
 		fmt.Println(err)
@@ -22,7 +20,7 @@ func Update(up models.UpdateField) {
 		query = "UPDATE public.filerecords SET vowels=$1 WHERE id=$2"
 	} else if up.Field == "capitalletters" {
 		query = "UPDATE public.filerecords SET capitalletters=$1 WHERE id=$2"
-	} else if up.Field == "smallleters" {
+	} else if up.Field == "smallletters" {
 		query = "UPDATE public.filerecords SET smallletters=$1 WHERE id=$2"
 	} else if up.Field == "words" {
 		query = "UPDATE public.filerecords SET words=$1 WHERE id=$2"

@@ -30,12 +30,16 @@ type Identity struct {
 	Password string `json:"password"`
 }
 type Identify struct {
-	Username string `json: username`
-	Password string `json: password`
+	Username string `json: "username"`
+	Password string `json: "password"`
 }
 
 type Response struct {
 	Data    interface{} `json:"data"`
 	Message string      `json:"message"`
 	Status  int         `json:"status"`
+}
+
+type ErrorResponse struct {
+	Error string `json:"error"`
 }
