@@ -13,4 +13,5 @@ func Routes(r *gin.Engine) {
 	r.GET("/file", middleware.MiddleWare(), GetAll)
 	r.PUT("/file", middleware.MiddleWare(), UpdateData)
 	r.DELETE("/file/:id", middleware.MiddleWare(), DeleteData)
+	r.POST("/refresh", Refresh)
 }

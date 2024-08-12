@@ -30,8 +30,8 @@ type Identity struct {
 	Password string `json:"password"`
 }
 type Identify struct {
-	Username string `json: "username"`
-	Password string `json: "password"`
+	Username string `json: username`
+	Password string `json: password`
 }
 
 type Response struct {
@@ -42,4 +42,8 @@ type Response struct {
 
 type ErrorResponse struct {
 	Error string `json:"error"`
+}
+
+var RefreshData struct {
+	RefreshToken string `json:"refresh_token"`
 }

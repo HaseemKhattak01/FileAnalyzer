@@ -11,7 +11,7 @@ import (
 func MiddleWare() gin.HandlerFunc {
 	return func(g *gin.Context) {
 		apitoken := g.Request.Header.Get("Authorization")
-		err := Jwt.Validity(apitoken)
+		_, err := Jwt.AccessTokenValidity(apitoken)
 		if err != nil {
 			g.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{
 				Error: err.Error(),

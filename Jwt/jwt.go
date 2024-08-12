@@ -7,32 +7,58 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var secretKey = []byte("secured")
+var refreshSecretKey = []byte("refresh-secret-key")
+var accessSecretKey = []byte("access-secret-key")
 
-func CreateToken(username string) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
+func CreateRefreshToken(username string) (string, error) {
+
+	refreshTokenClaim := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"username": username,
+			"exp":      time.Now().Add(time.Hour * 24 * 7).Unix(),
+		})
+	refreshToken, err := refreshTokenClaim.SignedString(refreshSecretKey)
+	if err != nil {
+		return "", err
+	}
+	return refreshToken, nil
+}
+func CreateAccessToken(refreshT string) (string, error) {
+	accessTokenClaim := jwt.NewWithClaims(jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"username": refreshT,
 			"exp":      time.Now().Add(time.Hour * 24).Unix(),
 		})
-
-	tokenString, err := token.SignedString(secretKey)
+	accessToken, err := accessTokenClaim.SignedString(accessSecretKey)
 	if err != nil {
 		return "", err
 	}
 
-	return tokenString, nil
+	return accessToken, nil
 }
 
-func Validity(tokenString string) error {
+func AccessTokenValidity(tokenString string) (*jwt.Token, error) {
 	if tokenString == "" {
-		return fmt.Errorf("missing token in header")
+		return nil, fmt.Errorf("missing token in header")
 	}
-	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte("secured"), nil
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return accessSecretKey, nil
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return token, nil
+}
+
+func RefreshTokenValidity(tokenString string) (*jwt.Token, error) {
+	if tokenString == "" {
+		return nil, fmt.Errorf("missing token in header")
+	}
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return refreshSecretKey, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return token, nil
 }

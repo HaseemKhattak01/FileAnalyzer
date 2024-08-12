@@ -199,13 +199,39 @@ func LogIn(g *gin.Context) {
 		g.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
 		return
 	}
-	token, err := Jwt.CreateToken(input.Username)
+	refreshToken, err := Jwt.CreateRefreshToken(input.Username)
 	if err != nil {
-		g.JSON(http.StatusInternalServerError, err.Error())
+		fmt.Println("Error creating access token:", err)
+		return
+	}
+
+	response := models.Response{
+		Data: gin.H{
+			"refresh_token": refreshToken,
+		},
+		Message: "Authentication successful",
+		Status:  http.StatusOK,
+	}
+	g.JSON(http.StatusCreated, response)
+}
+
+func Refresh(g *gin.Context) {
+	refreshToken := g.Request.Header.Get("Authorization")
+	_, err := Jwt.RefreshTokenValidity(refreshToken)
+	if err != nil {
+		g.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	accessToken, err := Jwt.CreateAccessToken(models.RefreshData.RefreshToken)
+	if err != nil {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "Failed to check user existence"})
 		return
 	}
 	response := models.Response{
-		Data:    token,
+		Data: gin.H{
+			"access_token": accessToken,
+		},
 		Message: "Authentication successful",
 		Status:  http.StatusOK,
 	}
