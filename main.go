@@ -1,7 +1,6 @@
 package main
 
 import (
-	"FileReader/database"
 	"FileReader/router"
 
 	"github.com/gin-gonic/gin"
@@ -9,7 +8,7 @@ import (
 
 func main() {
 	g := gin.Default()
-	database.ConnectDatabase()
+	// database.ConnectDatabase()
 	router.Routes(g)
-	g.Run(":8080")
+	g.Run(":1323")
 }

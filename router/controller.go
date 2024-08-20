@@ -4,9 +4,11 @@ import (
 	"FileReader/Jwt"
 	"FileReader/database"
 	"FileReader/models"
+	"database/sql"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -236,4 +238,37 @@ func Refresh(g *gin.Context) {
 		Status:  http.StatusOK,
 	}
 	g.JSON(http.StatusCreated, response)
+}
+
+func HealthHandler(g *gin.Context) {
+	fmt.Println("I am here in the health function!")
+	g.Status(http.StatusNoContent)
+}
+
+func ReadinessHandler(g *gin.Context) {
+	fmt.Println("i am here in readiness function!")
+	g.Status(http.StatusOK)
+}
+
+func DBReadinessHandler(g *gin.Context) {
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbPort, dbUser, dbPassword, dbName)
+
+	dbConn, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		g.String(http.StatusInternalServerError, fmt.Sprintf("Error connecting to database: %v", err))
+	}
+	defer dbConn.Close()
+
+	err = dbConn.Ping()
+	if err != nil {
+		g.String(http.StatusInternalServerError, fmt.Sprintf("Database is not ready: %v", err))
+	}
+
+	g.String(http.StatusOK, "Database is ready")
 }

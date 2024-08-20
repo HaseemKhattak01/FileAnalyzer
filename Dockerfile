@@ -1,16 +1,8 @@
-FROM golang:latest
-
-
-RUN mkdir /golang
-
-RUN go install  github.com/air-verse/air@latest
-
-ADD . /golang/
-
-RUN go install  github.com/air-verse/air@latest
-
-WORKDIR /golang
-
+FROM golang:1.22.5-alpine
+WORKDIR /app
+COPY go.mod go.sum ./
 RUN go mod download
-
-CMD ["air", "-c", ".air.toml"]
+COPY . .
+RUN go build -o main .
+EXPOSE 1323
+CMD ["./main"]

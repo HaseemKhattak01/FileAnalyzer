@@ -2,3 +2,7 @@ ali is a good boy he is intelligent he works hard
 ali is a good boy he is intelligent he works hard
 ali is a good boy he is intelligent he works hard
 ali is a good boy he is intelligent he works hard
+kubectl apply -f persistentvolumeclaim-golang.yaml
+kubectl apply -f persistentvolumeclaim-postgres.yaml
+kubectl apply -f deployment-golang.yaml
+kubectl apply -f deployment-postgres.yaml
