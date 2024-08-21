@@ -47,3 +47,7 @@ type ErrorResponse struct {
 var RefreshData struct {
 	RefreshToken string `json:"refresh_token"`
 }
+
+var JokeResponse struct {
+	Joke string `json:"joke"`
+}

@@ -1,5 +1,5 @@
 FROM golang:1.22.5-alpine
-WORKDIR /app
+WORKDIR /golang
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .

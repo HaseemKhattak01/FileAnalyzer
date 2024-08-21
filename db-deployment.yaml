@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: muhammadhaseem/postgres:latest
+          image: muhammadhaseem/db_img:latest
           env:
             - name: POSTGRES_USER
               value: "postgres"

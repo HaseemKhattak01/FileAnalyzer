@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: go-app
-          image: mughalaliahmad23/gonewimg:latest
+          image: muhammadhaseem/go_app:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1323
@@ -31,25 +31,26 @@ spec:
               value: "postgres"
             - name: DB_PASSWORD
               value: "haseem123"
-          resources:
-            requests:
-              memory: "256Mi"
-              cpu: "500m"
-            limits:
-              memory: "512Mi"
-              cpu: "1000m"
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 1323
-              scheme: HTTP
-            initialDelaySeconds: 5
-            periodSeconds: 15
-            timeoutSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /readiness
-              port: 1323
-              scheme: HTTP
-            initialDelaySeconds: 10
-            timeoutSeconds: 1
+          # resources:
+          #   requests:
+          #     memory: "256Mi"
+          #     cpu: "500m"
+          #   limits:
+          #     memory: "512Mi"
+          #     cpu: "1000m"
+          # livenessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 1323
+          #     scheme: HTTP
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 15
+          #   timeoutSeconds: 5
+          # readinessProbe:
+          #   httpGet:
+          #     path: /readiness
+          #     port: 1323
+          #     scheme: HTTP
+          #   initialDelaySeconds: 30  # Adjusted delay to account for application startup
+          #   periodSeconds: 15
+          #   timeoutSeconds: 5  # Increased timeout to account for longer response times

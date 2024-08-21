@@ -173,12 +173,12 @@ func SignUp(g *gin.Context) {
 	var input models.Identity
 	fmt.Println(input)
 	if err := g.BindJSON(&input); err != nil {
-		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		g.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 	exists, err := database.SignUp_db(input)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, gin.H{"error": "Failed to check user existence"})
+		g.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 	if exists {
@@ -190,15 +190,15 @@ func SignUp(g *gin.Context) {
 func LogIn(g *gin.Context) {
 	var input models.Identify
 	if err := g.ShouldBindJSON(&input); err != nil {
-		g.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		g.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 	isvalid, err := database.LogIn_db(input)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, gin.H{"error": "Failed to authenticate user"})
+		g.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
 	if !isvalid {
-		g.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+		g.JSON(http.StatusUnauthorized, gin.H{"error": err})
 		return
 	}
 	refreshToken, err := Jwt.CreateRefreshToken(input.Username)
@@ -221,13 +221,13 @@ func Refresh(g *gin.Context) {
 	refreshToken := g.Request.Header.Get("Authorization")
 	_, err := Jwt.RefreshTokenValidity(refreshToken)
 	if err != nil {
-		g.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		g.JSON(http.StatusUnauthorized, gin.H{"error": err})
 		return
 	}
 
 	accessToken, err := Jwt.CreateAccessToken(models.RefreshData.RefreshToken)
 	if err != nil {
-		g.JSON(http.StatusBadRequest, gin.H{"error": "Failed to check user existence"})
+		g.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 	response := models.Response{
@@ -238,6 +238,16 @@ func Refresh(g *gin.Context) {
 		Status:  http.StatusOK,
 	}
 	g.JSON(http.StatusCreated, response)
+}
+
+func JokeHandler(g *gin.Context) {
+	joke, err := database.GetJoke()
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+
+	g.JSON(http.StatusOK, gin.H{"joke": joke})
 }
 
 func HealthHandler(g *gin.Context) {
