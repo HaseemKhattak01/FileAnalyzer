@@ -1,6 +1,7 @@
 package router
 
 import (
+	"FileReader/controllers"
 	"FileReader/middleware"
 	"fmt"
 
@@ -9,15 +10,15 @@ import (
 
 func Routes(r *gin.Engine) {
 	fmt.Println("hello peter")
-	r.POST("/signup", SignUp)
-	r.POST("/login", LogIn)
-	r.POST("/file", middleware.MiddleWare(), FileReader)
-	r.GET("/file", middleware.MiddleWare(), GetAll)
-	r.PUT("/file", middleware.MiddleWare(), UpdateData)
-	r.DELETE("/file/:id", middleware.MiddleWare(), DeleteData)
-	r.GET("/joke", JokeHandler)
-	r.POST("/refresh", Refresh)
-	r.GET("/health", HealthHandler)
-	r.GET("/readiness", ReadinessHandler)
-	r.GET("/db-readiness", DBReadinessHandler)
+	r.POST("/signup", controllers.SignUp)
+	r.POST("/login", controllers.LogIn)
+	r.POST("/file", middleware.MiddleWare(), controllers.FileReader)
+	r.GET("/file", middleware.MiddleWare(), controllers.GetAll)
+	r.PUT("/file", middleware.MiddleWare(), controllers.UpdateData)
+	r.DELETE("/file/:id", middleware.MiddleWare(), controllers.DeleteData)
+	r.GET("/joke", controllers.JokeHandler)
+	r.POST("/refresh", controllers.Refresh)
+	r.GET("/health", controllers.HealthHandler)
+	r.GET("/readiness", controllers.ReadinessHandler)
+	r.GET("/db-readiness", controllers.DBReadinessHandler)
 }

@@ -47,17 +47,17 @@ func DeleteRecords(id int) (*models.DBResults, error) {
 	return &cal, nil
 }
 
-func Getdata() ([]models.Results, error) {
+func Getdata() ([]models.DBResults, error) {
 	rows, err := db.Query("SELECT * FROM filerecords")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var results []models.Results
+	var results []models.DBResults
 
 	for rows.Next() {
-		var stat models.Results
+		var stat models.DBResults
 		if err := rows.Scan(&stat.Id, &stat.Vowels, &stat.Capitalletters, &stat.Smallletters, &stat.Spaces, &stat.Words); err != nil {
 			return nil, err
 		}

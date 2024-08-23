@@ -1,12 +1,12 @@
 package models
 
 type Results struct {
-	Id             int `json:"id"`
-	Vowels         int `json:"vowels"`
-	Spaces         int `json:"spaces"`
-	Capitalletters int `json:"capitalletters"`
-	Smallletters   int `json:"smallletters"`
-	Words          int `json:"words"`
+	// Id             int `json:"id"`
+	Vowels         int `json:"vowels,omitempty"`
+	Spaces         int `json:"spaces,omitempty"`
+	Capitalletters int `json:"capitalletters,omitempty"`
+	Smallletters   int `json:"smallletters,omitempty"`
+	Words          int `json:"words,omitempty"`
 }
 
 type DBResults struct {
