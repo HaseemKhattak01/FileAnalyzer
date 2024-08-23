@@ -108,20 +108,26 @@ func LogIn_db(iden models.Identify) (bool, error) {
 const jokeAPIURL = "https://v2.jokeapi.dev/joke/Any?type=single"
 
 func GetJoke() (string, error) {
+
 	resp, err := http.Get(jokeAPIURL)
 	if err != nil {
 		return "", err
 	}
+
 	defer resp.Body.Close()
+
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
+
 	if err := json.Unmarshal(body, &models.JokeResponse); err != nil {
 		return "", err
 	}
+
 	return models.JokeResponse.Joke, nil
 }

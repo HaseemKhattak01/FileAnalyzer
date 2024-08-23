@@ -3,13 +3,12 @@ package router
 import (
 	"FileReader/controllers"
 	"FileReader/middleware"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Routes(r *gin.Engine) {
-	fmt.Println("hello peter")
+
 	r.POST("/signup", controllers.SignUp)
 	r.POST("/login", controllers.LogIn)
 	r.POST("/file", middleware.MiddleWare(), controllers.FileReader)
@@ -21,4 +20,5 @@ func Routes(r *gin.Engine) {
 	r.GET("/health", controllers.HealthHandler)
 	r.GET("/readiness", controllers.ReadinessHandler)
 	r.GET("/db-readiness", controllers.DBReadinessHandler)
+
 }

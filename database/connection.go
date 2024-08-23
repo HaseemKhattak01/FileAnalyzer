@@ -13,6 +13,7 @@ import (
 var db *sql.DB
 
 func ConnectDatabase() (*sql.DB, error) {
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file")
@@ -33,6 +34,7 @@ func ConnectDatabase() (*sql.DB, error) {
 		fmt.Println(err)
 		return nil, err
 	}
+
 	fmt.Println("hey im here")
 	err = db.Ping()
 	if err != nil {

@@ -9,6 +9,7 @@ import (
 )
 
 func MiddleWare() gin.HandlerFunc {
+
 	return func(g *gin.Context) {
 		apitoken := g.Request.Header.Get("Authorization")
 		_, err := Jwt.AccessTokenValidity(apitoken)
@@ -20,4 +21,5 @@ func MiddleWare() gin.HandlerFunc {
 		}
 		g.Next()
 	}
+
 }

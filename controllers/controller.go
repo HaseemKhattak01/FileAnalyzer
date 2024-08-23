@@ -17,6 +17,7 @@ import (
 )
 
 func FileReader(g *gin.Context) {
+
 	defer timer("main")()
 	numstring := g.Query("num")
 	if numstring == "" {
@@ -29,19 +30,23 @@ func FileReader(g *gin.Context) {
 		g.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
+
 	file, _, err := g.Request.FormFile("file")
 	if err != nil {
 		g.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 	}
+
 	content, err := io.ReadAll(file)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 	}
+
 	text := string(content)
 	size := len(text)
 	chunkSize := size / num
 	channel := make(chan models.Results)
 	var wg sync.WaitGroup
+
 	for i := 0; i < num; i++ {
 		start := i * chunkSize
 		end := start + chunkSize
@@ -70,11 +75,12 @@ func FileReader(g *gin.Context) {
 		finalResults.Smallletters += res.Smallletters
 		finalResults.Words += res.Words
 	}
+
 	err = database.InsertData(finalResults.Vowels, finalResults.Spaces, finalResults.Capitalletters, finalResults.Smallletters, finalResults.Words)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 	}
-	// g.JSON(http.StatusOK, finalResults)
+
 	g.JSON(http.StatusOK, models.Response{
 		Message: "file read successfully",
 		Data:    finalResults,
@@ -83,6 +89,7 @@ func FileReader(g *gin.Context) {
 }
 
 func Count(str string, channel chan models.Results) {
+
 	VowelCount := 0
 	WordsCount := 0
 	SpaceCount := 0
@@ -106,9 +113,11 @@ func Count(str string, channel chan models.Results) {
 		}
 		WordsCount = SpaceCount + 1
 	}
+
 	res := models.Results{
 		Vowels: VowelCount, Spaces: SpaceCount, Capitalletters: CapitalCount, Smallletters: SmallCount, Words: WordsCount,
 	}
+
 	channel <- res
 
 }
@@ -121,11 +130,12 @@ func timer(name string) func() {
 }
 
 func GetAll(g *gin.Context) {
+
 	data, err := database.Getdata()
 	if err != nil {
 		g.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 	}
-	//g.JSON(http.StatusOK, data)
+
 	g.JSON(http.StatusOK, models.Response{
 		Message: "Get all data successfully",
 		Data:    data,
@@ -134,6 +144,7 @@ func GetAll(g *gin.Context) {
 }
 
 func DeleteData(g *gin.Context) {
+
 	idString := g.Param("id")
 	id, err := strconv.Atoi(idString)
 	if err != nil {
@@ -143,7 +154,7 @@ func DeleteData(g *gin.Context) {
 	if err != nil {
 		g.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 	}
-	//g.JSON(http.StatusOK, del)
+
 	g.JSON(http.StatusOK, models.Response{
 		Message: "Deleted data successfully",
 		Data:    del,
@@ -152,6 +163,7 @@ func DeleteData(g *gin.Context) {
 }
 
 func UpdateData(g *gin.Context) {
+
 	up := models.UpdateField{}
 	if err := g.ShouldBindJSON(&up); err != nil {
 		g.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
@@ -159,7 +171,6 @@ func UpdateData(g *gin.Context) {
 	}
 	database.Update(up)
 
-	// g.JSON(http.StatusOK, gin.H{"message": "Record updated successfully"})
 	g.JSON(http.StatusOK, models.Response{
 		Message: "Updates data successfully",
 		Status:  http.StatusOK,
@@ -167,19 +178,21 @@ func UpdateData(g *gin.Context) {
 }
 
 func SignUp(g *gin.Context) {
+
 	var input models.Identity
 	fmt.Println(input)
 	if err := g.BindJSON(&input); err != nil {
 		g.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
+
 	exists, err := database.SignUp_db(input)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
+
 	if exists {
-		// g.JSON(http.StatusConflict, gin.H{"message": "User signed up successfully"})
 		g.JSON(http.StatusOK, models.Response{
 			Message: "User signed up successfully",
 			Status:  http.StatusConflict,
@@ -189,19 +202,23 @@ func SignUp(g *gin.Context) {
 }
 
 func LogIn(g *gin.Context) {
+
 	var input models.Identify
 	if err := g.ShouldBindJSON(&input); err != nil {
 		g.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
+
 	isvalid, err := database.LogIn_db(input)
 	if err != nil {
 		g.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 	}
+
 	if !isvalid {
 		g.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: err.Error()})
 		return
 	}
+
 	refreshToken, err := Jwt.CreateRefreshToken(input.Username)
 	if err != nil {
 		fmt.Println("Error creating access token:", models.ErrorResponse{Error: err.Error()})
@@ -215,10 +232,13 @@ func LogIn(g *gin.Context) {
 		Message: "Authentication successful",
 		Status:  http.StatusOK,
 	}
+
 	g.JSON(http.StatusCreated, response)
+
 }
 
 func Refresh(g *gin.Context) {
+
 	refreshToken := g.Request.Header.Get("Authorization")
 	_, err := Jwt.RefreshTokenValidity(refreshToken)
 	if err != nil {
@@ -231,6 +251,7 @@ func Refresh(g *gin.Context) {
 		g.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
+
 	response := models.Response{
 		Data: gin.H{
 			"access_token": accessToken,
@@ -238,10 +259,13 @@ func Refresh(g *gin.Context) {
 		Message: "Authentication successful",
 		Status:  http.StatusOK,
 	}
+
 	g.JSON(http.StatusCreated, response)
+
 }
 
 func JokeHandler(g *gin.Context) {
+
 	joke, err := database.GetJoke()
 	if err != nil {
 		g.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
@@ -249,6 +273,7 @@ func JokeHandler(g *gin.Context) {
 	}
 
 	g.JSON(http.StatusOK, gin.H{"joke": joke})
+
 }
 
 func HealthHandler(g *gin.Context) {
@@ -262,6 +287,7 @@ func ReadinessHandler(g *gin.Context) {
 }
 
 func DBReadinessHandler(g *gin.Context) {
+
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 	dbUser := os.Getenv("DB_USER")
@@ -274,6 +300,7 @@ func DBReadinessHandler(g *gin.Context) {
 	if err != nil {
 		g.String(http.StatusInternalServerError, fmt.Sprintf("Error connecting to database: %v", models.ErrorResponse{Error: err.Error()}))
 	}
+
 	defer dbConn.Close()
 
 	err = dbConn.Ping()
@@ -282,4 +309,5 @@ func DBReadinessHandler(g *gin.Context) {
 	}
 
 	g.String(http.StatusOK, "Database is ready")
+
 }

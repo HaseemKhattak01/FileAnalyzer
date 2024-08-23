@@ -17,18 +17,23 @@ func CreateRefreshToken(username string) (string, error) {
 			"username": username,
 			"exp":      time.Now().Add(time.Hour * 24 * 7).Unix(),
 		})
+
 	refreshToken, err := refreshTokenClaim.SignedString(refreshSecretKey)
 	if err != nil {
 		return "", err
 	}
+
 	return refreshToken, nil
 }
+
 func CreateAccessToken(refreshT string) (string, error) {
+
 	accessTokenClaim := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"username": refreshT,
 			"exp":      time.Now().Add(time.Hour * 24).Unix(),
 		})
+
 	accessToken, err := accessTokenClaim.SignedString(accessSecretKey)
 	if err != nil {
 		return "", err
@@ -38,27 +43,35 @@ func CreateAccessToken(refreshT string) (string, error) {
 }
 
 func AccessTokenValidity(tokenString string) (*jwt.Token, error) {
+
 	if tokenString == "" {
 		return nil, fmt.Errorf("missing token in header")
 	}
+
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return accessSecretKey, nil
 	})
+
 	if err != nil {
 		return nil, err
 	}
+
 	return token, nil
 }
 
 func RefreshTokenValidity(tokenString string) (*jwt.Token, error) {
+
 	if tokenString == "" {
 		return nil, fmt.Errorf("missing token in header")
 	}
+
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return refreshSecretKey, nil
 	})
+
 	if err != nil {
 		return nil, err
 	}
+
 	return token, nil
 }
